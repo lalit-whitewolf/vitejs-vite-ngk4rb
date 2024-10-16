@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       filtered = filtered.sort((a, b) => b.price - a.price);
     }
-    console.log("filtered",filtered);
+
     totalResultsElement.textContent = `Total Results: ${filtered.length}`;
     renderProducts(filtered);
   };
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const apiUrl = loadAll 
         ? `https://fakestoreapi.com/products?sort=${sort}`
         : `https://fakestoreapi.com/products?limit=${limit}&sort=${sort}`;
-         console.log("url",apiUrl);
+         
       const response = await fetch(apiUrl);
       if (!response.ok) throw new Error(`Error fetching products: ${response.statusText}`);
 
@@ -123,10 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         products = [...products, ...newProducts];
         if (newProducts.length < limit) allLoaded = true;
-      }
-      console.log("products",products);
-      const maxRating = Math.max(...products.map(product => product.rating.rate));
-      console.log("rating",maxRating);
+      }      
+      const maxRating = Math.max(...products.map(product => product.rating.rate));      
       ratingRange.max = maxRating;
       ratingRange.value = queryParams.get("rating") || maxRating;
       ratingValue.textContent = `0 - ${ratingRange.value}`;
