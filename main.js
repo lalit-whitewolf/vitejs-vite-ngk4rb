@@ -1,6 +1,12 @@
 import './style.css';
 
 document.addEventListener("DOMContentLoaded", () => {
+  
+  let queryParams = new URLSearchParams(window.location.search);
+  const spinner = document.getElementById('spinner');
+  const showSpinner = () => spinner.style.display = 'block';
+  const hideSpinner = () => spinner.style.display = 'none';
+  
   const productContainer = document.getElementById('product-list');
   const searchInput = document.getElementById('search');
   const categoryContainer = document.getElementById('categories');
@@ -8,16 +14,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const ratingValue = document.getElementById('ratingValue');
   const loadMoreButton = document.getElementById('loadMore');
   const sortOrderSelect = document.getElementById('sortOrder');
-  const spinner = document.getElementById('spinner');
+  
   const totalResultsElement = document.getElementById('totalResults');
+  const openFilterbutton = document.querySelector(".product-listing__open-btn");
+  const filterContain = document.querySelector(".filter-section");
+  const closeFilterBtn = document.querySelector(".filter-section__close");
   let products = [];
   let limit = 10;
   let allLoaded = false;
   let sortOrder = 'low-to-high';
-  let queryParams = new URLSearchParams(window.location.search);
+  
 
-  const showSpinner = () => spinner.style.display = 'block';
-  const hideSpinner = () => spinner.style.display = 'none';
+  const renderShimmers = () => {
+    const shimmerHTML = Array(limit).fill(`
+      <div class="shimmer">
+        <div class="shimmer-content">
+          <div class="shimmer-title"></div>
+          <div class="shimmer-price"></div>
+          <div class="shimmer-category"></div>
+          <div class="shimmer-rating"></div>
+        </div>
+      </div>
+    `).join('');    
+    productContainer.innerHTML = `<div class="shimmer-wrapper">${shimmerHTML}</div>`;
+  };
 
   const updateURL = () => {
     queryParams.set("sort", sortOrder);
@@ -30,9 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const populateCategories = () => {
     const uniqueCategories = [...new Set(products.map(p => p.category))];
     categoryContainer.innerHTML = uniqueCategories.map(category => `
-      <label>
+      <label class="category-label">${category}
         <input type="checkbox" name="category" value="${category}" ${queryParams.get("category")?.includes(category) ? "checked" : ""}>
-        ${category}
+        <span class="category-label__checkmark"></span>
       </label>
     `).join('');
   };
@@ -40,11 +60,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderProducts = (productsToRender) => {
     productContainer.innerHTML = productsToRender.length > 0 ? productsToRender.map(product => `
       <div class="product">
+      <a class="product-link" href="/product-detail?pd=${product.id}">
+      <div class="product-image-content">
+        <img src="${product.image}" alt="${product.title}" class="product-image">
+        </div>
+      <div class="product-content">
         <h3>${product.title}</h3>
         <p>Price: $${product.price}</p>
         <p>Category: ${product.category}</p>
         <p>Rating: ${product.rating.rate} (${product.rating.count} reviews)</p>
-        <img src="${product.image}" alt="${product.title}" width="100">
+        </div>        
+        </a>
       </div>
     `).join('') : "No result available";
   };
@@ -67,14 +93,20 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       filtered = filtered.sort((a, b) => b.price - a.price);
     }
+    console.log("filtered",filtered);
     totalResultsElement.textContent = `Total Results: ${filtered.length}`;
     renderProducts(filtered);
   };
+  const showFilter = ()=>{
+    filterContain.classList.add("show");
+  }
+  const hideFilter = ()=>{
+    filterContain.classList.remove("show");
+  }
 
   const fetchProducts = async (loadAll = false) => {
-    try {
-      showSpinner();
-
+    try {      
+      renderShimmers();
       const searchQuery = queryParams.get("search") || searchInput.value;
       const sort = queryParams.get("sort") || sortOrder;
       const apiUrl = loadAll 
@@ -92,8 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
         products = [...products, ...newProducts];
         if (newProducts.length < limit) allLoaded = true;
       }
-
+      console.log("products",products);
       const maxRating = Math.max(...products.map(product => product.rating.rate));
+      console.log("rating",maxRating);
       ratingRange.max = maxRating;
       ratingRange.value = queryParams.get("rating") || maxRating;
       ratingValue.textContent = `0 - ${ratingRange.value}`;
@@ -104,9 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error fetching products:", error);
       productContainer.innerHTML = "<p>Failed to load products. Please try again later.</p>";
-    } finally {
-      hideSpinner();
-    }
+    } 
   };
 
   const resetProducts = () => {
@@ -122,15 +153,15 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
   // Event listeners
-  searchInput.addEventListener("input", () => {
-    filterProducts();
-    updateURL();
-  });
-
-  categoryContainer.addEventListener("change", debounce(() => {
+  searchInput.addEventListener("input", debounce(() => {
     filterProducts();
     updateURL();
   }, 300));
+
+  categoryContainer.addEventListener("change", () => {
+    filterProducts();
+    updateURL();
+  },);
 
   ratingRange.addEventListener("input", () => {
     ratingValue.textContent = `0 - ${ratingRange.value}`;
@@ -147,12 +178,16 @@ document.addEventListener("DOMContentLoaded", () => {
   loadMoreButton.addEventListener("click", () => {
     if (!allLoaded) {
     fetchProducts(true);
-    loadMoreButton.classList.add("hide-load-more")
+    loadMoreButton.classList.add("hide-load-more");
     }
     else{
-      loadMoreButton.classList.remove("hide-load-more")
+      loadMoreButton.classList.remove("hide-load-more");
+      
     }
   });
-  allLoaded ? loadMoreButton.classList.remove("hide-load-more") : loadMoreButton.classList.add("hide-load-more");
+  allLoaded ? loadMoreButton.classList.add("hide-load-more") : loadMoreButton.classList.remove("hide-load-more");
   fetchProducts();
+  openFilterbutton.addEventListener("click",showFilter);
+  closeFilterBtn.addEventListener("click",hideFilter)
+
 });
