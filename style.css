@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Mulish", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,6 +14,20 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --primary-d1: #47B5FF;
+--primary-m1: #06283D;
+--primary-brand: #1363DF;
+--primary-l1: #DFF6FF;
+--gray-d2: #181C24;
+--gray-d1: #535965;
+--gray-m1: #91959C;
+--gray-l2: #B5B7BC;
+--gray-l1: #E5E5E7;
+--white: #FFFFFF;
+--positive-2: #12805C;
+--positive-1: #268E6C;
+--negative-2: #C9252D;
+--negative-1: #D7373F;
 }
 
 *,
@@ -30,9 +47,7 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -98,5 +113,70 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+.filter-section, .product-list { margin: 20px; }
+.product { border: 1px solid #ddd; padding: 10px; margin: 10px; width: 180px; }
+.filters { display: flex; gap: 10px; margin-bottom: 20px; }
+.product-list { display: flex; flex-wrap: wrap; gap: 20px; }
+.search-input, .range-input { width: 100%; }
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+
+
+.filter-section{   
+    height: 100vh;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0; 
+    transform: translateX(-100%);   
+    transition: all .3s ease-in-out;
+    visibility: hidden;
+    width: 100%;
+}
+.filter-section.show{
+  opacity: 1;
+  overflow-y: auto;
+  padding-bottom: 13em;
+  position: fixed;  
+  transform: translateX(0);
+  visibility: visible;
+  z-index: 20;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (min-width:768px){
+  .filter-section{
+    height: auto;
+    position: static;
+    transform: none;
+    visibility: visible;
+    opacity: 1;
+  }
+  .filter-section.show{
+    padding-bottom: 0;
+    position: static;
+    transform: none;
   }
 }

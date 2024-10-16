@@ -7,7 +7,56 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="product-listing">     
+      <div class="filter-section">
+        <div class="filter-section-container">
+          <div class="filter-section__top">
+            <h3 class="filter-section__top-title">Filters</h3>
+            <button class="filter-section__close"></button>
+          </div>
+          <div class="filter__inner-section">
+            <div class="filter-search">
+        <input type="text" id="search" placeholder="Search..." class="search-input">
+      </div>
+      <div class="filter-search">
+        <div id="categories" class="filters"></div>
+      </div>
+      <div class="filter-search">
+        <label for="ratingRange">Rating Range: <span id="ratingValue">0 - 5</span></label>
+        <input type="range" id="ratingRange" min="0" max="5" step="0.1" value="5" class="range-input">
+       </div>
+      </div>
+        </div>
+      </div>
+
+
+      <div class="product-listing__container">
+        <div class="product-listing__top">
+        <p id="totalResults">Total Results: 0</p>
+         <div class="product-listing__btn-container">
+          <button class="product-listing__open-btn">Filter Results</button>
+        <div class="product-listing__sort">
+          <label for="sortOrder">Sort By:</label>
+          <select id="sortOrder">
+            <option value="low-to-high">Price: Low to High</option>
+            <option value="high-to-low">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+      </div>
+      <div id="product-list" class="product-list"></div>
+      <div>
+        <button id="loadMore" class="load-more">Load More</button>
+        </div>
+      </div>
+        </div>
+
+
+      <div id="spinner" class="spinner" style="display: none;">
+        <div class="loader"></div>
+      </div>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
