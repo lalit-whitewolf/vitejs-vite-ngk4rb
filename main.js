@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.history.replaceState({}, "", `?${queryParams.toString()}`);
   };
 
-  const populateCategories = () => {
-    const uniqueCategories = [...new Set(products.map(p => p.category))];
+  const populateCategories = () => {    
+    const uniqueCategories = [...new Set(products.map(p => p.category))];    
     categoryContainer.innerHTML = uniqueCategories.map(category => `
       <label class="category-label">${category}
         <input type="checkbox" name="category" value="${category}" ${queryParams.get("category")?.includes(category) ? "checked" : ""}>
@@ -120,8 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (loadAll) {
         products = newProducts;
         allLoaded = true;
-      } else {
-        products = [...products, ...newProducts];
+      } else {        
+        products = [...products, ...newProducts];     
+        
         if (newProducts.length < limit) allLoaded = true;
       }      
       const maxRating = Math.max(...products.map(product => product.rating.rate));      
@@ -138,10 +139,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } 
   };
 
-  const resetProducts = () => {
+  const resetProducts = (flag) => {    
     products = [];
     allLoaded = false;
-    fetchProducts();
+    fetchProducts(flag);
   };
   const debounce = (func, delay) => {
     let timeout;   
@@ -169,21 +170,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sortOrderSelect.addEventListener("change", () => {
     sortOrder = sortOrderSelect.value;
-    queryParams.set("sort", sortOrder);
-    resetProducts();
+    queryParams.set("sort", sortOrder);   
+    allLoaded  ? resetProducts(true) : resetProducts(false);
+    
   });
 
   loadMoreButton.addEventListener("click", () => {
     if (!allLoaded) {
     fetchProducts(true);
+    }
     loadMoreButton.classList.add("hide-load-more");
-    }
-    else{
-      loadMoreButton.classList.remove("hide-load-more");
-      
-    }
   });
-  allLoaded ? loadMoreButton.classList.add("hide-load-more") : loadMoreButton.classList.remove("hide-load-more");
+
   fetchProducts();
   openFilterbutton.addEventListener("click",showFilter);
   closeFilterBtn.addEventListener("click",hideFilter)
